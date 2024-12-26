@@ -1,0 +1,21 @@
+{
+	"name": "vitrine",
+	"version": "0.1.0-alpha",
+	"main": "index.js",
+	"scripts": {
+		"dev": "bun --watch run src/index.ts"
+	},
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@kmamal/sdl": "^0.10.7",
+		"canvas": "^3.0.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.1.14"
+	}
+}
