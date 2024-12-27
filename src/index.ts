@@ -5,9 +5,7 @@ import { editorWindow } from "@/windows/editor";
 import { homeWindow } from "@/windows/home";
 import { wrapper } from "@/wrapper";
 import sdl from "@kmamal/sdl";
-import { createCanvas, registerFont } from "canvas";
-import path from "path";
-
+import { createCanvas } from "canvas";
 process.title = "vitrine";
 
 export const config = {
@@ -16,8 +14,8 @@ export const config = {
 	fontSize: 16,
 	font: {
 		size: 16,
-		family: "Fira Code",
-		path: path.join(process.cwd(), "src", "fonts", "FiraCode-Regular.ttf"),
+		family: "monospace",
+		path: "",
 	},
 	theme: {
 		background: {
@@ -32,14 +30,7 @@ export const config = {
 	},
 };
 
-export enum keyDownType {
-	ctrl = 0,
-	shift = 1,
-	alt = 2,
-	meta = 3,
-}
-
-registerFont(config.font.path, { family: config.font.family });
+//registerFont(config.font.path, { family: config.font.family });
 
 // Setup
 const window = sdl.video.createWindow({ title: "vitrine" });

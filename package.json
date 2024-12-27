@@ -3,7 +3,8 @@
 	"version": "0.1.0-alpha",
 	"main": "index.js",
 	"scripts": {
-		"dev": "bun --watch run src/index.ts"
+		"dev": "bun --watch run src/index.ts",
+		"build:windows": "bun build src/index.ts --compile --minify --sourcemap --target=bun-windows-x64-modern  --bytecode --external @kmamal/sdl --external canvas --outfile dist/vitrine"
 	},
 	"author": "",
 	"license": "ISC",
@@ -17,5 +18,8 @@
 	},
 	"devDependencies": {
 		"@types/bun": "^1.1.14"
-	}
+	},
+	"trustedDependencies": [
+		"@kmamal/sdl"
+	]
 }

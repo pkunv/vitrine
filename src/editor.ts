@@ -4,6 +4,7 @@ import type { ContextTypes, TabContext } from "@/lib/window";
 import sdl from "@kmamal/sdl";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { EOL } from "os";
+import path from "path";
 
 export type Editor = ReturnType<typeof createEditor>;
 
@@ -107,10 +108,10 @@ export function createEditor({
 		content[row] = line.substring(0, col - 1) + line.substring(col);
 		if (col > 0) moveCursor(-1, 0);
 		/*
-		if (content[row] === "") {
-			content.splice(row, 1);
-			moveCursor(0, -1);
-		}
+  if (content[row] === "") {
+   content.splice(row, 1);
+   moveCursor(0, -1);
+  }
       */
 		if (col === 0 && content[row].length > 0) {
 			content.splice(row, 1);
@@ -261,7 +262,7 @@ export function createEditor({
 					});
 					context.window.createTab({
 						id: `tab-${context.window.tabs.length + 1}`,
-						title: newSrc.split("/").pop(),
+						title: newSrc.split(path.sep).pop(),
 						isActive: true,
 						context: createEditor({ src: newSrc }),
 						inputResolver: (context, input) => {
@@ -283,9 +284,9 @@ export function createEditor({
 
 				// check if file exists and is not a directory
 
-				if (existsSync(newSrc) && !existsSync(newSrc + "/")) {
+				if (existsSync(newSrc) && !existsSync(newSrc + path.sep)) {
 					context.tab.context = createEditor({ src: newSrc });
-					context.tab.title = newSrc.split("/").pop();
+					context.tab.title = newSrc.split(path.sep).pop();
 					toggleDialog("load");
 					return;
 				} else {
