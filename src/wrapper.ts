@@ -1,19 +1,19 @@
 import { config } from "@/index";
 import { type TextOption, type TextRow } from "@/lib/text";
 import type { Window } from "@/lib/window";
-import { formatMemoryUsage } from "@/utils";
+import type { Workspace } from "@/lib/workspace";
 
-export function wrapper({ windows }: { windows: Window[] }) {
+export function wrapper({ windows, workspace }: { windows: Window[]; workspace: Workspace }) {
 	const activeWindow = windows.find((window) => window.isActive);
 	if (!activeWindow) {
 		return;
 	}
+	const activeTab = activeWindow.getActiveTab();
 
 	return {
 		topBarRenderer: () => {
-			return [
+			const navigation = [
 				[
-					{ text: "🅥 ", color: config.theme.text.primary },
 					{ text: "vitrine", color: config.theme.text.primary },
 					{ text: " | ", color: config.theme.text.primary },
 					...windows.map((window, index) => {
@@ -36,16 +36,27 @@ export function wrapper({ windows }: { windows: Window[] }) {
 					}),
 				],
 			] as TextRow[][];
+
+			const activeTabTopBarRenderer =
+				activeTab?.topBarRenderer !== undefined
+					? activeTab.topBarRenderer({ data: activeTab.context, workspace, tab: activeTab })
+					: undefined;
+
+			return activeTabTopBarRenderer
+				? [...navigation, ...activeTabTopBarRenderer]
+				: ([...navigation] as TextRow[][]);
 		},
 		bottomBarRenderer: () => {
-			return [
-				[
-					{
-						text: `RAM Usage: ${formatMemoryUsage(process.memoryUsage().external)} (too high bruh)`,
-						color: config.theme.text.plain,
-					},
-				],
-			] as TextRow[][];
+			return activeTab && activeTab.downBarRenderer !== undefined
+				? activeTab.downBarRenderer({ data: activeTab.context, workspace, tab: activeTab })
+				: ([
+						[
+							{
+								text: `(bruh)`,
+								color: config.theme.text.plain,
+							},
+						],
+				  ] as TextRow[][]);
 		},
 	};
 }

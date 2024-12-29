@@ -1,4 +1,5 @@
 import { config } from "@/index";
+import { hexToRgb } from "@/utils";
 
 export type TextOption = "bold" | "italic" | "underline";
 
@@ -19,7 +20,8 @@ export function renderTextRow({
 	content: TextRow[];
 	row: number;
 }) {
-	const { fontSize, font } = config;
+	const { font } = config;
+	const fontSize = font.size;
 
 	ctx.fillStyle = "white";
 
@@ -30,12 +32,37 @@ export function renderTextRow({
 
 		const options = chunk.options ?? [];
 
-		ctx.font = `${options.join(" ") + " "}${fontSize}px ${font.family}`;
+		ctx.font = `${options.join(" ") + " "}${font.size}px ${font.family}`;
 
 		if (chunk.text.includes("	")) {
-			ctx.fillStyle = "red";
-			ctx.fillRect(currentWidthMeasure, row * fontSize - fontSize, 4, fontSize);
+			for (let i = 0; i < chunk.text.split("	").length - 1; i++) {
+				const tabMeasure = ctx.measureText("	").width;
+				const rgb = hexToRgb(config.theme.text.dim);
+				ctx.fillStyle = `rgba(${rgb?.r}, ${rgb?.g}, ${rgb?.b}, 0.1)`;
+				ctx.fillRect(
+					currentWidthMeasure +
+						tabMeasure * (i === 0 ? 0 : i) +
+						ctx.measureText(chunk.text.split("	")[i]).width,
+					row * fontSize,
+					currentWidthMeasure * 2 + fontSize,
+					2
+				);
+			}
 		}
+
+		/*
+		if (chunk.text.includes("	")) {
+			
+			const rgb = hexToRgb(config.theme.text.dim);
+			ctx.fillStyle = `rgba(${rgb?.r}, ${rgb?.g}, ${rgb?.b}, 0.5)`;
+			ctx.fillRect(
+				currentWidthMeasure,
+				row * fontSize - fontSize / 2,
+				currentWidthMeasure * 2 + fontSize,
+				2
+			);
+		}
+		*/
 
 		if (chunk.bgColor) {
 			ctx.fillStyle = chunk.bgColor;
@@ -52,7 +79,7 @@ export function renderTextRow({
 			ctx.textAlign = "center";
 		}
 
-		ctx.fillText(chunk.text.replaceAll("	", "  "), currentWidthMeasure, row * fontSize);
+		ctx.fillText(chunk.text, currentWidthMeasure, row * fontSize);
 		currentWidthMeasure += ctx.measureText(chunk.text).width;
 	}
 }

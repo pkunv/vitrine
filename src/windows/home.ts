@@ -49,6 +49,12 @@ export const homeWindow = createWindow({
 					],
 					[
 						{
+							text: "Press CTRL+PLUS or CTRL+MINUS in any window to zoom in or out.",
+							color: config.theme.text.primary,
+						},
+					],
+					[
+						{
 							text: " ",
 							color: config.theme.text.primary,
 						},
@@ -149,8 +155,14 @@ export const homeWindow = createWindow({
 							color: config.theme.text.plain,
 						},
 					],
+					[
+						{
+							text: `CTRL+F - Find in current file dialog`,
+							color: config.theme.text.plain,
+						},
+					],
 					[{ text: "~", color: config.theme.text.dim }],
-					...Array(workspace.rows - 22)
+					...Array(workspace.rows - 24 <= 10 ? 1 : workspace.rows - 24)
 						.fill({})
 						.map(() => {
 							return [{ text: "~", color: config.theme.text.dim }];

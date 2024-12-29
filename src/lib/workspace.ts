@@ -11,6 +11,7 @@ export function createWorkspace({ cols, rows }: { cols: number; rows: number }) 
 		get: () => workspace,
 		set: ({ cols, rows }: { cols: number; rows: number }) => {
 			workspace = { cols, rows };
+			return workspace;
 		},
 	};
 }

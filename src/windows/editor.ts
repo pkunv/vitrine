@@ -1,4 +1,6 @@
-import { createEditor } from "@/editor";
+import { editorInputResolver } from "@/editor/input-resolver";
+import { createEditor } from "@/editor/main";
+import { editorDownBarRenderer, editorRenderer, editorTopBarRenderer } from "@/editor/renderers";
 import { createTab, createWindow } from "@/lib/window";
 
 export const editorWindow = createWindow({
@@ -13,13 +15,25 @@ export const editorWindow = createWindow({
 				if (context.data === null) {
 					return;
 				}
-				context.data.inputResolver(context, input);
+				editorInputResolver(context, input);
 			},
 			renderer: (context) => {
 				if (context.data === null) {
 					return [];
 				}
-				return context.data.renderer(context);
+				return editorRenderer(context);
+			},
+			topBarRenderer: (context) => {
+				if (context.data === null) {
+					return [];
+				}
+				return editorTopBarRenderer(context);
+			},
+			downBarRenderer: (context) => {
+				if (context.data === null) {
+					return [];
+				}
+				return editorDownBarRenderer(context);
 			},
 			context: createEditor({}),
 		}),

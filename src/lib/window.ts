@@ -1,5 +1,4 @@
-import type { Editor } from "@/editor";
-
+import type { Editor } from "@/editor/main";
 import type { TextRow } from "@/lib/text";
 import type { Workspace } from "@/lib/workspace";
 import sdl from "@kmamal/sdl";
@@ -20,6 +19,7 @@ export interface TabConfig {
 	isActive: boolean;
 	renderer: (context: TabContext<ContextTypes>) => TextRow[][];
 	downBarRenderer?: (context: TabContext<ContextTypes>) => TextRow[][];
+	topBarRenderer?: (context: TabContext<ContextTypes>) => TextRow[][];
 	inputResolver: (
 		context: TabContext<ContextTypes>,
 		input: sdl.Events.Window.KeyDown | sdl.Events.Window.TextInput
@@ -44,6 +44,7 @@ export function createTab(tabConfig: TabConfig) {
 		title: tabConfig.title ?? tabConfig.context?.getMetadata().filename,
 		renderer: tabConfig.renderer,
 		downBarRenderer: tabConfig.downBarRenderer,
+		topBarRenderer: tabConfig.topBarRenderer,
 		inputResolver: tabConfig.inputResolver,
 		context: tabConfig.context,
 		isActive,
@@ -77,11 +78,6 @@ export function createWindow(windowConfig: WindowConfig) {
 		},
 		getActiveTab: () => {
 			return tabs.find((tab) => tab.isActive);
-		},
-		setActiveTab: (tabId: string) => {
-			tabs.forEach((tab) => {
-				tab.setActive(tab.id === tabId);
-			});
 		},
 	};
 }
