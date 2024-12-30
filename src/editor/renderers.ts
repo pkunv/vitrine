@@ -107,11 +107,8 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 	const lines = [] as TextRow[][];
 	const startIndex = Math.max(cursor.row - Math.floor(workspace.rows / 2), 0);
 
-	// find maximum index number length to pad the line numbers
-	// ternary operation needed for empty content
-	const maxContentLineLength = content.length
-		? Math.max(...content.map((line, index) => index.toString().toString().length))
-		: 1;
+	// find maximum line number string length to pad the line numbers
+	const maxContentLineLength = (workspace.rows + startIndex).toString().length;
 
 	// horizontal "helper ruler" lines (every 10th character)
 	lines.push([
@@ -194,12 +191,11 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 				{ text: content[i].substring(endCol), color: config.theme.text.plain },
 			];
 		}
-
 		lines.push([
 			{
 				// line number with padding behavior (with proper index starting at 1, not 0)
 				text: `${i + 1}${" ".repeat(
-					maxContentLineLength <= 1 ? 1 : maxContentLineLength - (i + 1).toString().length
+					maxContentLineLength >= 2 ? maxContentLineLength - (i + 1).toString().length : 1
 				)} `,
 				color: "gray",
 			},
