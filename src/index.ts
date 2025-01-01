@@ -1,7 +1,8 @@
-import { createConfig } from "@/config";
+import { createConfig, defaultConfig } from "@/config";
 import { renderTextRow } from "@/lib/text";
 import type { Window } from "@/lib/window";
 import { createWorkspace } from "@/lib/workspace";
+import { createAsyncGlobal } from "@/utils";
 import { editorWindow } from "@/windows/editor";
 import { homeWindow } from "@/windows/home";
 import { wrapper } from "@/wrapper";
@@ -9,7 +10,8 @@ import sdl from "@kmamal/sdl";
 import { createCanvas } from "canvas";
 process.title = "vitrine";
 
-export const config = createConfig();
+export const workspace = createWorkspace({ cols: 80, rows: 24 });
+export const windows: Window[] = [homeWindow, editorWindow];
 
 // Setup
 const window = sdl.video.createWindow({ title: "vitrine" });
@@ -18,13 +20,27 @@ const { pixelWidth: width, pixelHeight: height } = window;
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext("2d");
 
-export const workspace = createWorkspace({ cols: 80, rows: 24 });
-export const windows: Window[] = [homeWindow, editorWindow];
-
 let enableRender = true;
 
+export const configHandler = createAsyncGlobal(async () => createConfig(), {
+	...defaultConfig,
+	modify: () => null,
+});
+
+// here this is a fallback value until the async config loader is resolved
+export let config = configHandler.get();
+
+const configLoadInterval = setInterval(() => {
+	// if async config loader is resolved, then set config and render result
+	if (configHandler.ready) {
+		config = configHandler.get();
+		clearInterval(configLoadInterval);
+		enableRender = true;
+	}
+}, 150);
+
 function render(width = canvas.width, height = canvas.height) {
-	ctx.fillStyle = "#141414";
+	ctx.fillStyle = config.theme.background.primary;
 	ctx.fillRect(0, 0, width, height);
 
 	const dimensions = workspace.set({

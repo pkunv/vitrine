@@ -6,7 +6,7 @@ import { existsSync } from "fs";
 import path from "path";
 
 // not an isolated function, uses functions from the editor
-export function editorInputResolver(
+export async function editorInputResolver(
 	context: TabContext<ContextTypes>,
 	input: sdl.Events.Window.KeyDown | sdl.Events.Window.TextInput
 ) {
@@ -75,7 +75,7 @@ export function editorInputResolver(
 					id: `file-${context.window.tabs.length}`,
 					title: metadata.newSrc.split(path.sep).pop(),
 					isActive: true,
-					context: createEditor({ src: metadata.newSrc }),
+					context: await createEditor({ src: metadata.newSrc }),
 					inputResolver: (context, input) => {
 						if (context.data === null) {
 							return;
@@ -108,7 +108,7 @@ export function editorInputResolver(
 			// check if file exists and is not a directory
 
 			if (existsSync(metadata.newSrc) && !existsSync(metadata.newSrc + path.sep)) {
-				context.tab.context = createEditor({ src: metadata.newSrc });
+				context.tab.context = await createEditor({ src: metadata.newSrc });
 				context.tab.title = metadata.newSrc.split(path.sep).pop();
 				editor.toggleDialog("load");
 				return;
@@ -143,6 +143,7 @@ export function editorInputResolver(
 
 	if (input.type === "textInput") {
 		editor.insertCharacter(input.text);
+		editor.reformatHighlightedContent(true);
 		return;
 	}
 
@@ -153,7 +154,7 @@ export function editorInputResolver(
 		context.window.createTab({
 			id: `file-${context.window.tabs.length}`,
 			isActive: true,
-			context: createEditor({}),
+			context: await createEditor({}),
 			inputResolver: (context, input) => {
 				if (context.data === null) {
 					return;
@@ -214,11 +215,13 @@ export function editorInputResolver(
 	}
 	if (input.ctrl && input.scancode === sdl.keyboard.SCANCODE.V) {
 		editor.pasteClipboard();
+		editor.reformatHighlightedContent();
 		return;
 	}
 	if (input.ctrl && input.scancode === sdl.keyboard.SCANCODE.X) {
 		editor.copySelection();
 		editor.removeSelection();
+		editor.reformatHighlightedContent();
 		return;
 	}
 	if (input.ctrl && input.scancode === sdl.keyboard.SCANCODE.L) {
@@ -228,22 +231,26 @@ export function editorInputResolver(
 
 	if (input.scancode === sdl.keyboard.SCANCODE.RETURN) {
 		editor.insertNewLine();
+		editor.reformatHighlightedContent();
 		return;
 	}
 	if (input.scancode === sdl.keyboard.SCANCODE.BACKSPACE) {
 		editor.removeCharacter();
+		editor.reformatHighlightedContent();
 		return;
 	}
 	if (input.scancode === sdl.keyboard.SCANCODE.TAB) {
 		editor.insertCharacter("	");
+		editor.reformatHighlightedContent();
 		return;
 	}
 
 	const multiplier = input.alt ? 5 : 1;
 
 	if (input.scancode === sdl.keyboard.SCANCODE.LEFT) {
-		if (input.shift) editor.registerSelection();
-		else editor.endSelection();
+		if (input.shift) {
+			editor.registerSelection();
+		} else editor.endSelection();
 		editor.moveCursor(-multiplier, 0);
 		return;
 	}

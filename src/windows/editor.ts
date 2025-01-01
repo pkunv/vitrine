@@ -35,7 +35,7 @@ export const editorWindow = createWindow({
 				}
 				return editorDownBarRenderer(context);
 			},
-			context: createEditor({}),
+			context: await createEditor({}),
 		}),
 	],
 });

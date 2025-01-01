@@ -103,6 +103,7 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 	const workspace = context.workspace.get();
 	const cursor = editor.getCursor();
 	const content = editor.getContent();
+	const highlightedContent = editor.getHighlightedContent();
 
 	const lines = [] as TextRow[][];
 	const startIndex = Math.max(cursor.row - Math.floor(workspace.rows / 2), 0);
@@ -158,6 +159,10 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 			content[i] !== undefined
 				? [{ text: content[i], color: config.theme.text.plain }]
 				: [{ text: "~", color: config.theme.text.dim }];
+
+		if (highlightedContent && highlightedContent[i]) {
+			textRow = highlightedContent[i];
+		}
 
 		// cursor indicator
 		if (i === cursor.row) {
@@ -219,6 +224,8 @@ export function editorDownBarRenderer(context: TabContext<ContextTypes>) {
 			{ text: `Ln ${cursor.row + 1}, Col ${cursor.col + 1}`, color: config.theme.text.primary },
 			{ text: ` | `, color: config.theme.text.primary },
 			{ text: `EOL: ${metadata.eol.name}`, color: config.theme.text.primary },
+			{ text: ` | `, color: config.theme.text.primary },
+			{ text: metadata.language, color: config.theme.text.primary },
 		],
 		[
 			{

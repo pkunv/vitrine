@@ -1,12 +1,12 @@
-import { getEOLSequence } from "@/utils";
+import { formatHighlightedContent } from "@/editor/highlighter";
+import { getEOLSequence, getLanguageFromExtension, type Language } from "@/utils";
 import sdl from "@kmamal/sdl";
-import { readFileSync } from "fs";
 import { EOL as OS_EOL } from "os";
 import path from "path";
 
-export type Editor = ReturnType<typeof createEditor>;
+export type Editor = Awaited<ReturnType<typeof createEditor>>;
 
-export function createEditor({
+export async function createEditor({
 	src,
 	startCol,
 	startRow,
@@ -15,14 +15,17 @@ export function createEditor({
 	startCol?: number;
 	startRow?: number;
 }) {
-	const text = src ? readFileSync(src, { encoding: "utf-8" }) : `${OS_EOL}`;
+	const text = src ? await Bun.file(src).text() : `${OS_EOL}`;
 	const EOL = getEOLSequence(text);
+	const language = src ? getLanguageFromExtension(path.extname(src)) : "plaintext";
 	let actionVerboseStatus = "";
 	let lastCharCol = 0;
 	let col = startCol || 0;
 	let row = startRow || 0;
 	let newSrc = src ?? process.cwd();
 	const content: string[] = text ? text.split(EOL.sequence) : [];
+	let highlightedContent =
+		language !== "plaintext" ? formatHighlightedContent(text, language) : null;
 	let findQuery: string = "";
 	let isSelecting = false;
 	// boolean for putting asterisk if file is changed
@@ -88,6 +91,10 @@ export function createEditor({
 
 	function getContent() {
 		return content;
+	}
+
+	function getHighlightedContent() {
+		return highlightedContent;
 	}
 
 	function insertCharacter(character: string) {
@@ -266,9 +273,26 @@ export function createEditor({
 			findQuery = findQuery.slice(0, -1);
 		}
 	}
+	function reformatHighlightedContent(thisRow?: boolean) {
+		if (thisRow === undefined) {
+			highlightedContent =
+				language !== "plaintext"
+					? formatHighlightedContent(content.join(EOL.sequence), language as Language)
+					: null;
+			return;
+		}
+		if (highlightedContent === null) return;
+		highlightedContent[row] =
+			language !== "plaintext"
+				? formatHighlightedContent(content[row], language as Language)[0]
+				: null;
+		console.log(highlightedContent[row]);
+	}
 
 	return {
 		getContent,
+		getHighlightedContent,
+		reformatHighlightedContent,
 		getCursor,
 		getIsSelecting,
 		getSelection,
@@ -298,6 +322,7 @@ export function createEditor({
 		},
 		getMetadata: () => {
 			return {
+				language,
 				isChanged,
 				findQuery,
 				eol: EOL,

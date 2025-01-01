@@ -1,6 +1,6 @@
 {
 	"name": "vitrine",
-	"version": "0.2.1-alpha",
+	"version": "0.3.0-alpha",
 	"main": "index.js",
 	"scripts": {
 		"dev": "bun --watch run src/index.ts",
@@ -11,13 +11,18 @@
 	"description": "",
 	"dependencies": {
 		"@kmamal/sdl": "^0.10.7",
-		"canvas": "^3.0.0"
+		"@speed-highlight/core": "^1.2.7",
+		"canvas": "^3.0.0",
+		"he": "^1.2.0",
+		"highlight.js": "^11.11.1",
+		"node-html-parser": "^7.0.1"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
 	"devDependencies": {
-		"@types/bun": "^1.1.14"
+		"@types/bun": "^1.1.14",
+		"@types/he": "^1.2.3"
 	},
 	"trustedDependencies": [
 		"@kmamal/sdl"
