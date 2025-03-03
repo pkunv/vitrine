@@ -5,10 +5,14 @@
 ## Overview
 
 > **Warning**  
-> Project is done only for fun and I do not plan on actively working on this.
+> Many bugs are present as project is in alpha state and working with it might be yet unstable.
 
-Simple keyboard-centric code/text editor available for Windows, macOS and Linux.
-Great foundation for a bigger project. Created as a proof of concept. 
+Simple keyboard-centric code/text editor available for Windows, macOS and Linux.\
+Feel free to contribute or fork it. Started as a challenge and proof of concept with SDL2 usage in Bun.
+
+![Screenshot 1](https://raw.githubusercontent.com/pkunv/vitrine/master/resources/screenshot-1.png)
+
+![Screenshot 3](https://raw.githubusercontent.com/pkunv/vitrine/master/resources/screenshot-3.png)
 
 ## Features
 
@@ -21,7 +25,7 @@ Great foundation for a bigger project. Created as a proof of concept.
 
 ## Requirements
 
-- CPU with AVX instructions (2013 and later)
+- CPU with AVX2 instructions (2013 and later)
 - 256MB of disk space
 - 512MB of RAM
 
@@ -66,11 +70,22 @@ CTRL+F: Find in current file dialog
 ## Installation
 
 If you wish to just use the editor, you can download executable from Release page,
-unpack .zip archive and run vitrine.exe.
+unpack .zip archive and run the program.
 
-1. Install bun environment (skip if you already have bun)
-2. Run `bun install` command.
-3. Run `bun run dev` command to run development version.
+```bash
+# Installing dependencies
+bun install
+
+# Running development version
+bun run dev
+
+# Building cross-platform executables
+bun run build:windows
+
+bun run build:mac
+
+bun run build:linux
+```
 
 
 
