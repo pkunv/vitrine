@@ -185,3 +185,9 @@ export function createAsyncGlobal<T>(
 
 	return global;
 }
+
+export function splitAtIndex(str: string, index: number): [string, string] {
+	return [str.substring(0, index), str.substring(index)];
+	// or
+	// return [str.slice(0, index), str.slice(index)];
+}

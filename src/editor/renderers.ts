@@ -166,15 +166,63 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 
 		// cursor indicator
 		if (i === cursor.row) {
+			let accumulated = [];
+			for (let y = 0; y < textRow.length; y++) {
+				accumulated.push({
+					element: textRow[y],
+					index: y,
+					chars: textRow[y].text.length,
+					accumulatedChars:
+						y === 0
+							? textRow[y].text.length
+							: accumulated[y - 1].accumulatedChars + textRow[y].text.length,
+				});
+			}
+			let cursoredTextRow = structuredClone(textRow);
+
+			const rowChunk = accumulated.find(
+				(x) => x.chars >= cursor.col || x.index === textRow.length - 1
+			);
+
+			if (rowChunk !== undefined) {
+				const relativeCursorCol =
+					rowChunk.index > 0
+						? cursor.col - accumulated[rowChunk.index - 1].accumulatedChars
+						: cursor.col;
+				cursoredTextRow.splice(
+					rowChunk.index,
+					1,
+					{
+						text: rowChunk.element.text.substring(0, relativeCursorCol),
+						bgColor: config.theme.background.primary,
+						color: rowChunk.element.color,
+					},
+					{
+						text: rowChunk.element.text[relativeCursorCol] || " ",
+						bgColor: config.theme.text.primary,
+						color: config.theme.background.primary,
+					},
+					{
+						text: rowChunk.element.text.substring(relativeCursorCol + 1),
+						bgColor: config.theme.background.primary,
+						color: rowChunk.element.color,
+					}
+				);
+				textRow = cursoredTextRow;
+			} else {
+				console.log("not found");
+			}
+			/*
 			textRow = [
-				{ text: content[i].substring(0, cursor.col), color: config.theme.text.plain },
+				{ text: highlightedContent[i].substring(0, cursor.col), color: config.theme.text.plain },
 				{
 					text: content[i][cursor.col] || " ",
 					bgColor: config.theme.text.primary,
 					color: config.theme.text.dim,
 				},
-				{ text: content[i].substring(cursor.col + 1), color: config.theme.text.plain },
+				{ text: highlightedContent[i].substring(cursor.col + 1), color: config.theme.text.plain },
 			];
+			*/
 		}
 
 		// selection
@@ -191,7 +239,7 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 				{
 					text: content[i].substring(startCol, endCol),
 					bgColor: config.theme.text.primary,
-					color: config.theme.text.plain,
+					color: config.theme.background.primary,
 				},
 				{ text: content[i].substring(endCol), color: config.theme.text.plain },
 			];
