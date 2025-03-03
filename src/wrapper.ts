@@ -52,7 +52,7 @@ export function wrapper({ windows, workspace }: { windows: Window[]; workspace: 
 				: ([
 						[
 							{
-								text: `(bruh)`,
+								text: `made by Kunv // kunv.dev`,
 								color: config.theme.text.plain,
 							},
 						],

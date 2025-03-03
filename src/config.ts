@@ -1,3 +1,8 @@
+import { editorInputResolver } from "@/editor/input-resolver";
+import { createEditor } from "@/editor/main";
+import { editorDownBarRenderer, editorRenderer, editorTopBarRenderer } from "@/editor/renderers";
+import { windows } from "@/index";
+import { createTab } from "@/lib/window";
 import { setPropertyFromDotNotation } from "@/utils";
 import { join } from "path";
 
@@ -71,6 +76,42 @@ export async function createConfig() {
 		//await new Promise((resolve) => setTimeout(resolve, 1000));
 		config = (await Bun.file(join(process.cwd(), ".vitrine", "config.json")).json()) as Config;
 	}
+	// when config is ready, create tab for editing config file
+	windows
+		.find((window) => window.id === "home")
+		?.tabs.push(
+			createTab({
+				id: "file-config",
+				title: "Config file",
+				isActive: false,
+				context: await createEditor({ src: join(process.cwd(), ".vitrine", "config.json") }),
+				inputResolver: async (context, input) => {
+					if (context.data === null) {
+						return;
+					}
+					editorInputResolver(context, input);
+				},
+				renderer: (context) => {
+					if (context.data === null) {
+						return [];
+					}
+					return editorRenderer(context);
+				},
+				topBarRenderer: (context) => {
+					if (context.data === null) {
+						return [];
+					}
+					return editorTopBarRenderer(context);
+				},
+				downBarRenderer: (context) => {
+					if (context.data === null) {
+						return [];
+					}
+					return editorDownBarRenderer(context);
+				},
+			})
+		);
+
 	return {
 		...config,
 		// TODO: these parameter types

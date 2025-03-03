@@ -25,7 +25,15 @@ export function hexToRgb(hex: string) {
 		: null;
 }
 
-export const setPropertyFromDotNotation = (t, path, value) => {
+interface ObjectWithProperties {
+	[key: string]: any;
+}
+
+export const setPropertyFromDotNotation = <T extends ObjectWithProperties>(
+	t: T,
+	path: string,
+	value: any
+): any => {
 	if (typeof t != "object") throw Error("non-object");
 	if (path == "") throw Error("empty path");
 	const pos = path.indexOf(".");

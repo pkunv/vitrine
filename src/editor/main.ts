@@ -282,11 +282,14 @@ export async function createEditor({
 			return;
 		}
 		if (highlightedContent === null) return;
-		highlightedContent[row] =
+		const formatted =
 			language !== "plaintext"
 				? formatHighlightedContent(content[row], language as Language)[0]
 				: null;
-		console.log(highlightedContent[row]);
+		if (formatted !== null) {
+			highlightedContent[row] = formatted;
+		}
+		//console.log(highlightedContent[row]);
 	}
 
 	return {

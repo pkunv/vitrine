@@ -1,17 +1,20 @@
 import { createConfig, defaultConfig } from "@/config";
 import { renderTextRow } from "@/lib/text";
-import type { Window } from "@/lib/window";
+import { type Window } from "@/lib/window";
 import { createWorkspace } from "@/lib/workspace";
 import { createAsyncGlobal } from "@/utils";
-import { editorWindow } from "@/windows/editor";
-import { homeWindow } from "@/windows/home";
+import { createEditorWindow } from "@/windows/editor";
+import { createHomeWindow } from "@/windows/home";
+
 import { wrapper } from "@/wrapper";
 import sdl from "@kmamal/sdl";
 import { createCanvas } from "canvas";
-process.title = "vitrine";
+//process.title = "vitrine";
 
 export const workspace = createWorkspace({ cols: 80, rows: 24 });
-export const windows: Window[] = [homeWindow, editorWindow];
+export const windows: Window[] = [];
+createHomeWindow();
+createEditorWindow();
 
 // Setup
 const window = sdl.video.createWindow({ title: "vitrine" });
