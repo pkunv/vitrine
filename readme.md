@@ -1,4 +1,4 @@
-# vitrine
+# ![Favicon](https://raw.githubusercontent.com/pkunv/vitrine/master/resources/icon.png) vitrine
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/pkunv/vitrine)
 
@@ -53,7 +53,8 @@ CTRL+X: Cut selection\
 CTRL+V: Paste content from clipboard\
 CTRL+L: Select current line\
 RETURN, UP, DOWN: Insert new line\
-BACKSPACE: Remove character/selection
+BACKSPACE: Remove character/selection\
+CTRL+N: Create new file
 
 ### Editor dialog prompt keybindings
 Cursor in dialog prompts is not supported yet.\
