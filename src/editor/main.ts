@@ -119,14 +119,14 @@ export async function createEditor({
 		content[row] = line.substring(0, col - 1) + line.substring(col);
 		if (col > 0) moveCursor(-1, 0);
 		/*
-  if (content[row] === "") {
-   content.splice(row, 1);
-   moveCursor(0, -1);
-  }
+			if (content[row] === "") {
+			content.splice(row, 1);
+			moveCursor(0, -1);
+			}
       */
 		if (col === 0 && content[row].length > 0) {
 			content.splice(row, 1);
-			moveCursor(0, -1);
+			moveCursor(0, -1, true);
 			content[row] += line;
 		}
 	}

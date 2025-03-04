@@ -1,6 +1,6 @@
 {
 	"name": "vitrine",
-	"version": "0.5.0-alpha",
+	"version": "0.5.1-alpha",
 	"main": "index.js",
 	"scripts": {
 		"dev": "bun --watch run src/index.ts",

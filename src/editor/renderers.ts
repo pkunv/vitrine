@@ -166,63 +166,58 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 
 		// cursor indicator
 		if (i === cursor.row) {
-			let accumulated = [];
+			// Find the segment containing the cursor and its position
+			let accumulatedChars = 0;
+			let rowChunkIndex = -1;
+			let rowChunkElement = null;
+
+			// Find which text segment contains the cursor position
 			for (let y = 0; y < textRow.length; y++) {
-				accumulated.push({
-					element: textRow[y],
-					index: y,
-					chars: textRow[y].text.length,
-					accumulatedChars:
-						y === 0
-							? textRow[y].text.length
-							: accumulated[y - 1].accumulatedChars + textRow[y].text.length,
-				});
+				const segmentLength = textRow[y].text.length;
+				accumulatedChars += segmentLength;
+
+				if (accumulatedChars > cursor.col || y === textRow.length - 1) {
+					rowChunkIndex = y;
+					rowChunkElement = textRow[y];
+					break;
+				}
 			}
-			let cursoredTextRow = structuredClone(textRow);
 
-			const rowChunk = accumulated.find(
-				(x) => x.chars >= cursor.col || x.index === textRow.length - 1
-			);
+			// If we found the segment containing the cursor
+			if (rowChunkIndex !== -1 && rowChunkElement) {
+				// Calculate cursor position relative to the current segment
+				const prevAccumulatedChars = accumulatedChars - rowChunkElement.text.length;
+				const relativeCursorCol = cursor.col - prevAccumulatedChars;
 
-			if (rowChunk !== undefined) {
-				const relativeCursorCol =
-					rowChunk.index > 0
-						? cursor.col - accumulated[rowChunk.index - 1].accumulatedChars
-						: cursor.col;
+				// Create a new array with the cursor indicator
+				const cursoredTextRow = [...textRow];
+
+				// Replace the segment containing the cursor with three segments:
+				// 1. Text before cursor
+				// 2. Cursor character
+				// 3. Text after cursor
 				cursoredTextRow.splice(
-					rowChunk.index,
+					rowChunkIndex,
 					1,
 					{
-						text: rowChunk.element.text.substring(0, relativeCursorCol),
+						text: rowChunkElement.text.substring(0, relativeCursorCol),
 						bgColor: config.theme.background.primary,
-						color: rowChunk.element.color,
-					},
+						color: rowChunkElement.color || config.theme.text.plain,
+					} as TextRow,
 					{
-						text: rowChunk.element.text[relativeCursorCol] || " ",
+						text: rowChunkElement.text[relativeCursorCol] || " ",
 						bgColor: config.theme.text.primary,
 						color: config.theme.background.primary,
-					},
+					} as TextRow,
 					{
-						text: rowChunk.element.text.substring(relativeCursorCol + 1),
+						text: rowChunkElement.text.substring(relativeCursorCol + 1),
 						bgColor: config.theme.background.primary,
-						color: rowChunk.element.color,
-					}
+						color: rowChunkElement.color || config.theme.text.plain,
+					} as TextRow
 				);
+
 				textRow = cursoredTextRow;
-			} else {
-				console.log("not found");
 			}
-			/*
-			textRow = [
-				{ text: highlightedContent[i].substring(0, cursor.col), color: config.theme.text.plain },
-				{
-					text: content[i][cursor.col] || " ",
-					bgColor: config.theme.text.primary,
-					color: config.theme.text.dim,
-				},
-				{ text: highlightedContent[i].substring(cursor.col + 1), color: config.theme.text.plain },
-			];
-			*/
 		}
 
 		// selection
@@ -235,13 +230,13 @@ export function editorRenderer(context: TabContext<ContextTypes>) {
 			const endCol = sel.end.row === i ? sel.end.col : content[i].length;
 
 			textRow = [
-				{ text: content[i].substring(0, startCol), color: config.theme.text.plain },
+				{ text: content[i].substring(0, startCol), color: config.theme.text.plain } as TextRow,
 				{
 					text: content[i].substring(startCol, endCol),
 					bgColor: config.theme.text.primary,
 					color: config.theme.background.primary,
-				},
-				{ text: content[i].substring(endCol), color: config.theme.text.plain },
+				} as TextRow,
+				{ text: content[i].substring(endCol), color: config.theme.text.plain } as TextRow,
 			];
 		}
 		lines.push([
@@ -280,7 +275,7 @@ export function editorDownBarRenderer(context: TabContext<ContextTypes>) {
 				text: `Path: ${metadata.src ? metadata.src : "new file"}`,
 				color: config.theme.background.primary,
 				bgColor: config.theme.text.dim,
-			},
+			} as TextRow,
 		],
 	] as TextRow[][];
 }
